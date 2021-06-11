@@ -63,6 +63,10 @@ class AmazonReviewFullDataModule(pl.LightningDataModule):
         print("Tokenizing training set...")
         self.tokenize_all_and_save(self.amazon_train, "train.pt")
 
+        # TODO: host from cloud and download from there first
+        # TODO: store dataset parameters batch_size and max_seq_length in
+        # dictionary in saved tensor, compare when downloading
+
         # print("Tokenizing test set...")
         # self.tokenize_all_and_save(self.amazon_test, "test.pt")
 
