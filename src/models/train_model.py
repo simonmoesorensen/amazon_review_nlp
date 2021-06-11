@@ -1,5 +1,4 @@
-# from src.data.AmazonReviewNew import AmazonReviewFullDataModule
-from torch.utils.data.dataloader import DataLoader
+from src.data.AmazonReviewNew import AmazonReviewFullDataModule
 from src.models.bertsentimentclassifier import BertSentimentClassifier
 from transformers import BertTokenizer
 
@@ -32,16 +31,14 @@ model_name = "bert-base-cased"
 model = BertSentimentClassifier(model_name)
 tokenizer = BertTokenizer.from_pretrained(model_name)
 
-# data = AmazonReviewFullDataModule(tokenizer)
-test_data = torch.load("data/processed/test2.pt")
-test_dataloader = DataLoader(test_data, batch_size=64, collate_fn=collate_fn)
+data = AmazonReviewFullDataModule(tokenizer)
 
 trainer_params = {
         'gpus': 0,
         'max_epochs': 3,
         'progress_bar_refresh_rate': 20,
         'log_every_n_steps': 10,
-        # 'logger': WandbLogger(save_dir="lightning_logs/"),
+        'logger': WandbLogger(save_dir="lightning_logs/"),
         'callbacks': [
             EarlyStopping(
                 monitor='val_loss',
@@ -51,7 +48,7 @@ trainer_params = {
                 mode='min'
                 ),
             ModelCheckpoint(
-                dirpath='models//BertSentimentClassifier//checkpoints//weights',
+                dirpath='models/BertSentimentClassifier/checkpoints/weights',
                 verbose=True,
                 monitor='val_loss',
                 mode='min'
@@ -62,10 +59,6 @@ trainer_params = {
 trainer = pl.Trainer(**trainer_params)
 trainer.fit(
     model,
-    train_dataloader=test_dataloader,
-    val_dataloaders=test_dataloader
+    train_dataloader=data.train_dataloader(),
+    val_dataloaders=data.val_dataloader()
     )
-# trainer.fit(
-#     train_dataloader=data.train_dataloader(),
-#     val_dataloaders=data.val_dataloader()
-#     )

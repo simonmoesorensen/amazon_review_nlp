@@ -1,7 +1,7 @@
 from torch import nn, optim
 from transformers import BertModel
 import pytorch_lightning as pl
-# import torch
+import torch
 import torch.nn.functional as F
 
 
@@ -38,30 +38,30 @@ class BertSentimentClassifier(pl.LightningModule):
             attention_mask=attention_mask,
         )
 
-        # _, preds = torch.max(logits, dim=1)
         probs = F.softmax(logits, dim=1)
         loss = self.criterion(probs, labels)
 
         return loss
 
     def training_step(self, batch, batch_idx):
-        loss, accuracy = self.step(batch)
+        loss = self.step(batch)
         self.log('train_loss', loss)
-        # self.log('train_accuracy', accuracy)
         return loss
 
     def validation_step(self, batch, batch_idx):
         loss = self.step(batch)
         self.log('val_loss', loss)
-        # self.log('val_accuracy', accuracy)
         return loss
 
     def test_step(self, batch, batch_idx):
-        loss, accuracy = self.step(batch)
+        loss = self.step(batch)
         self.log('test_loss', loss)
-        # self.log('test_accuracy', accuracy)
         return loss
 
     def configure_optimizers(self):
         optimizer = optim.Adam(self.parameters(), lr=1e-3)
         return optimizer
+
+    def get_prediction(logits: torch.Tensor):
+        _, preds = torch.max(logits, dim=1)
+        return preds
