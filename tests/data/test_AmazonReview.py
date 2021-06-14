@@ -8,7 +8,7 @@ def test_constructor():
     assert type(data) == AmazonReviewFullDataModule
 
 
-@pytest.mark.parametrize('val_size', [0.05, 0.1, 0.4])
+@pytest.mark.parametrize("val_size", [0.05, 0.1, 0.4])
 def test_setup(val_size):
     data = AmazonReviewFullDataModule(val_size=val_size)
     data.setup()

@@ -15,12 +15,14 @@ project_dir = Path(__file__).resolve().parents[2]
 
 
 class AmazonReviewFullDataModule(pl.LightningDataModule):
-    def __init__(self,
-                 tokenizer,
-                 val_size: float = 0.2,
-                 data_dir: str = project_dir.joinpath('data'),
-                 batch_size: int = 32,
-                 max_seq_length: int = 128):
+    def __init__(
+        self,
+        tokenizer,
+        val_size: float = 0.2,
+        data_dir: str = project_dir.joinpath("data"),
+        batch_size: int = 32,
+        max_seq_length: int = 128,
+    ):
         super().__init__()
         self.data_dir = data_dir
         self.batch_size = batch_size
@@ -36,10 +38,10 @@ class AmazonReviewFullDataModule(pl.LightningDataModule):
         if not exists(train_path) or not exists(test_path):
             self.setup()
 
-        self.tokenized_train = torch.load(train_path)
+        # self.tokenized_train = torch.load(train_path)
         self.tokenized_test = torch.load(test_path)
 
-        self.train_sampler, self.valid_sampler = self.get_train_val_samplers()
+        # self.train_sampler,self.valid_sampler = self.get_train_val_samplers()
 
     def get_train_val_samplers(self):
         n = len(self.tokenized_train)
@@ -57,8 +59,8 @@ class AmazonReviewFullDataModule(pl.LightningDataModule):
 
     def setup(self, stage: Optional[str] = None):
         print("Downloading data...")
-        self.amazon_train = AmazonReviewPolarity(self.data_dir, split='train')
-        self.amazon_test = AmazonReviewPolarity(self.data_dir, split='test')
+        self.amazon_train = AmazonReviewPolarity(self.data_dir, split="train")
+        self.amazon_test = AmazonReviewPolarity(self.data_dir, split="test")
 
         print("Tokenizing training set...")
         self.tokenize_all_and_save(self.amazon_train, "train.pt")
@@ -67,18 +69,14 @@ class AmazonReviewFullDataModule(pl.LightningDataModule):
         # TODO: store dataset parameters batch_size and max_seq_length in
         # dictionary in saved tensor, compare when downloading
 
-        # print("Tokenizing test set...")
-        # self.tokenize_all_and_save(self.amazon_test, "test.pt")
+        print("Tokenizing test set...")
+        self.tokenize_all_and_save(self.amazon_test, "test.pt")
 
     def collate_fn(self, batch):
-        labels = torch.stack([x["labels"] for x in batch],
-                             axis=0)
-        input_ids = torch.stack([x["input_ids"] for x in batch],
-                                axis=0)
-        token_type_ids = torch.stack([x["token_type_ids"] for x in batch],
-                                     axis=0)
-        attention_mask = torch.stack([x["attention_mask"] for x in batch],
-                                     axis=0)
+        labels = torch.stack([x["labels"] for x in batch], axis=0)
+        input_ids = torch.stack([x["input_ids"] for x in batch], axis=0)
+        token_type_ids = torch.stack([x["token_type_ids"] for x in batch], axis=0)
+        attention_mask = torch.stack([x["attention_mask"] for x in batch], axis=0)
         return {
             "labels": labels,
             "input_ids": input_ids,
@@ -102,7 +100,8 @@ class AmazonReviewFullDataModule(pl.LightningDataModule):
             self.tokenized_train,
             batch_size=self.batch_size,
             collate_fn=self.collate_fn,
-            sampler=self.train_sampler
+            sampler=self.train_sampler,
+            num_workers=16,
         )
 
     def valid_dataloader(self):
@@ -110,14 +109,16 @@ class AmazonReviewFullDataModule(pl.LightningDataModule):
             self.tokenized_train,
             batch_size=self.batch_size,
             collate_fn=self.collate_fn,
-            sampler=self.valid_sampler
+            sampler=self.valid_sampler,
+            num_workers=16,
         )
 
     def test_dataloader(self):
         return DataLoader(
             self.tokenized_test,
             batch_size=self.batch_size,
-            collate_fn=self.collate_fn
+            collate_fn=self.collate_fn,
+            num_workers=16,
         )
 
     def tokenize(self, example):
@@ -125,14 +126,14 @@ class AmazonReviewFullDataModule(pl.LightningDataModule):
 
         encoded_sentence = self.tokenizer(
             sentence,
-            return_tensors='pt',
+            return_tensors="pt",
             max_length=self.max_seq_length,
             truncation=True,
-            padding="max_length"
+            padding="max_length",
         )
         return {
             "label": label,
             "input_ids": encoded_sentence["input_ids"],
             "token_type_ids": encoded_sentence["token_type_ids"],
-            "attention_mask": encoded_sentence["attention_mask"]
+            "attention_mask": encoded_sentence["attention_mask"],
         }
