@@ -59,8 +59,8 @@ class AmazonReviewFullDataModule(pl.LightningDataModule):
 
     def setup(self, stage: Optional[str] = None):
         print("Downloading data...")
-        self.amazon_train = AmazonReviewPolarity(self.data_dir, split="train")
-        self.amazon_test = AmazonReviewPolarity(self.data_dir, split="test")
+        self.amazon_train = AmazonReviewFull(self.data_dir, split="train")
+        self.amazon_test = AmazonReviewFull(self.data_dir, split="test")
 
         print("Tokenizing training set...")
         self.tokenize_all_and_save(self.amazon_train, "train.pt")
