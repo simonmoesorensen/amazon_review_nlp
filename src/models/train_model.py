@@ -31,7 +31,7 @@ data = AmazonReviewFullDataModule(tokenizer)
 trainer_params = {
     "gpus": 0,
     "max_epochs": 3,
-    "precision": "float16",
+    "precision": 16,
     "progress_bar_refresh_rate": 20,
     "log_every_n_steps": 10,
     "callbacks": [
