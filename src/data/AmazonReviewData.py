@@ -17,11 +17,12 @@ project_dir = Path(__file__).resolve().parents[2]
 class AmazonReviewFullDataModule(pl.LightningDataModule):
     def __init__(
         self,
-        tokenizer,
+        tokenizer=None,
         val_size: float = 0.2,
         data_dir: str = project_dir.joinpath("data"),
         batch_size: int = 32,
         max_seq_length: int = 128,
+        load_train: bool = True,
     ):
         super().__init__()
         self.data_dir = data_dir
@@ -38,16 +39,17 @@ class AmazonReviewFullDataModule(pl.LightningDataModule):
         if not exists(train_path) or not exists(test_path):
             self.setup()
 
-        # self.tokenized_train = torch.load(train_path)
         self.tokenized_test = torch.load(test_path)
 
-        # self.train_sampler,self.valid_sampler = self.get_train_val_samplers()
+        if load_train:
+            self.tokenized_train = torch.load(train_path)
+            self.train_sampler, self.valid_sampler = self.get_samplers()
 
-    def get_train_val_samplers(self):
+    def get_samplers(self):
         n = len(self.tokenized_train)
         indices = list(range(n))
-        valid_size = self.valid_size
-        split = int(np.floor(valid_size * n))
+        val_size = self.val_size
+        split = int(np.floor(val_size * n))
         np.random.shuffle(indices)
 
         train_idx, valid_idx = indices[split:], indices[:split]
@@ -68,7 +70,7 @@ class AmazonReviewFullDataModule(pl.LightningDataModule):
         # TODO: host from cloud and download from there first
         # TODO: store dataset parameters batch_size and max_seq_length in
         # dictionary in saved tensor, compare when downloading
-        # TODO: Compare parameters for data loading with respect to performance?
+        # TODO: Compare parameters for data loading with respect to performance
 
         print("Tokenizing test set...")
         self.tokenize_all_and_save(self.amazon_test, "test.pt")

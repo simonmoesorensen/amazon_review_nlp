@@ -1,6 +1,7 @@
 import pytest
+import torch
 
-from src.data.AmazonReview import AmazonReviewFullDataModule
+from src.data.AmazonReviewData import AmazonReviewFullDataModule
 
 
 def test_constructor():
@@ -36,3 +37,29 @@ def test_test_dataloader():
     data.setup()
     data_loader = data.test_dataloader()
     assert len(data_loader.dataset) == 650000
+
+
+# @pytest.mark.parametrize("batch_size", [16, 17, 32, 29, 64, 128])
+def test_test_dataloader_shape():
+    batch_size = 15
+
+    data_loader = AmazonReviewFullDataModule(
+        val_size=0.2,
+        batch_size=batch_size
+    ).test_dataloader()
+
+    batch = next(iter(data_loader))
+
+    max_sequence_length = 128
+
+    labels_shape = torch.Size([batch_size])
+    assert batch["labels"].shape == labels_shape
+
+    input_ids_shape = torch.Size([batch_size, max_sequence_length])
+    assert batch["input_ids"].shape == input_ids_shape
+
+    token_type_ids_shape = torch.Size([batch_size, max_sequence_length])
+    assert batch["token_type_ids"].shape == token_type_ids_shape
+
+    attention_mask_shape = torch.Size([batch_size, max_sequence_length])
+    assert batch["attention_mask"].shape == attention_mask_shape

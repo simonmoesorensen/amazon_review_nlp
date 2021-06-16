@@ -1,6 +1,6 @@
 from src.data.AmazonReviewData import AmazonReviewFullDataModule
 from src.models.bertsentimentclassifier import BertSentimentClassifier
-from transformers import BertTokenizer
+# from transformers import BertTokenizer
 
 import pytorch_lightning as pl
 from pytorch_lightning.callbacks import ModelCheckpoint
@@ -24,9 +24,9 @@ def collate_fn(batch):
 
 model_name = "bert-base-cased"
 model = BertSentimentClassifier(model_name)
-tokenizer = BertTokenizer.from_pretrained(model_name)
+# tokenizer = BertTokenizer.from_pretrained(model_name)
 
-data = AmazonReviewFullDataModule(tokenizer)
+data = AmazonReviewFullDataModule()
 
 trainer_params = {
     "gpus": 0,

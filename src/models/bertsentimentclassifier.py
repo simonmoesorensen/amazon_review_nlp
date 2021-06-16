@@ -62,6 +62,6 @@ class BertSentimentClassifier(pl.LightningModule):
         optimizer = optim.Adam(self.parameters(), lr=1e-3)
         return optimizer
 
-    def get_prediction(logits: torch.Tensor):
+    def get_prediction(self, logits: torch.Tensor):
         _, preds = torch.max(logits, dim=1)
         return preds
