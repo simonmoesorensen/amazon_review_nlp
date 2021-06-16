@@ -6,7 +6,7 @@ import torch.nn.functional as F
 
 
 class BertSentimentClassifier(pl.LightningModule):
-    def __init__(self, model_name, n_classes):
+    def __init__(self, model_name):
         super(BertSentimentClassifier, self).__init__()
         n_classes = 5
 
