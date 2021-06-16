@@ -46,7 +46,7 @@ class AmazonReviewFullDataModule(pl.LightningDataModule):
     def get_train_val_samplers(self):
         n = len(self.tokenized_train)
         indices = list(range(n))
-        valid_size = 0.20
+        valid_size = self.valid_size
         split = int(np.floor(valid_size * n))
         np.random.shuffle(indices)
 
