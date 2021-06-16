@@ -5,7 +5,7 @@ from os.path import exists
 
 from torch.utils.data import DataLoader
 from torch.utils.data.sampler import SubsetRandomSampler
-from torchtext.datasets import AmazonReviewPolarity
+from torchtext.datasets import AmazonReviewFull
 import pytorch_lightning as pl
 import torch
 import numpy as np
@@ -68,6 +68,7 @@ class AmazonReviewFullDataModule(pl.LightningDataModule):
         # TODO: host from cloud and download from there first
         # TODO: store dataset parameters batch_size and max_seq_length in
         # dictionary in saved tensor, compare when downloading
+        # TODO: Compare parameters for data loading with respect to performance?
 
         print("Tokenizing test set...")
         self.tokenize_all_and_save(self.amazon_test, "test.pt")
@@ -93,7 +94,6 @@ class AmazonReviewFullDataModule(pl.LightningDataModule):
         data = [self.tokenize(x) for x in dataloader]
 
         torch.save(data, self.processed_data_path + filename)
-        return data
 
     def train_dataloader(self):
         return DataLoader(

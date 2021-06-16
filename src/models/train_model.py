@@ -5,7 +5,6 @@ from transformers import BertTokenizer
 import pytorch_lightning as pl
 from pytorch_lightning.callbacks import ModelCheckpoint
 from pytorch_lightning.callbacks.early_stopping import EarlyStopping
-from pytorch_lightning.loggers import WandbLogger
 
 import torch
 
@@ -35,7 +34,6 @@ trainer_params = {
     "precision": "float16",
     "progress_bar_refresh_rate": 20,
     "log_every_n_steps": 10,
-    "logger": WandbLogger(save_dir="lightning_logs/"),
     "callbacks": [
         EarlyStopping(
             monitor="val_loss",
