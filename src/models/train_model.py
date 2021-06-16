@@ -1,4 +1,4 @@
-from src.data.AmazonReviewNew import AmazonReviewFullDataModule
+from src.data.AmazonReviewData import AmazonReviewFullDataModule
 from src.models.bertsentimentclassifier import BertSentimentClassifier
 from transformers import BertTokenizer
 

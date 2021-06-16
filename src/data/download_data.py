@@ -1,4 +1,4 @@
-from src.data.AmazonReviewNew import AmazonReviewFullDataModule
+from src.data.AmazonReviewData import AmazonReviewFullDataModule
 from transformers import BertTokenizer
 
 model_name = "bert-base-cased"
