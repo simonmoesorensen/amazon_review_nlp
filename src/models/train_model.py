@@ -1,6 +1,6 @@
-from src.data.AmazonReviewData import AmazonReviewFullDataModule
-from src.models.bertsentimentclassifier import BertSentimentClassifier
-# from transformers import BertTokenizer
+from src.data.AmazonReviewDataContinuousTokenization import AmazonReviewFullDataModule
+from src.models.distilbertsentimentclassifier import DistilBertSentimentClassifier
+from transformers import DistilBertTokenizer
 
 import pytorch_lightning as pl
 from pytorch_lightning.callbacks import ModelCheckpoint
@@ -22,16 +22,19 @@ def collate_fn(batch):
     }
 
 
-model_name = "bert-base-cased"
-model = BertSentimentClassifier(model_name)
-# tokenizer = BertTokenizer.from_pretrained(model_name)
+model_name = "distilbert-base-cased"
+model = DistilBertSentimentClassifier(model_name)
+tokenizer = DistilBertTokenizer.from_pretrained(model_name)
 
-data = AmazonReviewFullDataModule()
+data = AmazonReviewFullDataModule(tokenizer)
+
+labels, x = next(iter(data.train_dataloader()))
+out = model(**x)
 
 trainer_params = {
     "gpus": 0,
     "max_epochs": 3,
-    "precision": 16,
+    # "precision": 16,
     "progress_bar_refresh_rate": 20,
     "log_every_n_steps": 10,
     "callbacks": [
@@ -54,6 +57,6 @@ trainer_params = {
 trainer = pl.Trainer(**trainer_params)
 trainer.fit(
     model,
-    train_dataloader=data.test_dataloader(),
+    train_dataloader=data.train_dataloader(),
     val_dataloaders=data.test_dataloader(),
 )

@@ -1,6 +1,5 @@
-
 from torch import nn, optim
-from transformers import DistilBertModel
+from transformers import DistilBertForSequenceClassification  # Only 2 classes
 import pytorch_lightning as pl
 import torch
 import torch.nn.functional as F
@@ -11,8 +10,8 @@ class DistilBertSentimentClassifier(pl.LightningModule):
         super(DistilBertSentimentClassifier, self).__init__()
         n_classes = 5
 
-        # configuration = DistilBertConfig()
-        self.bert = DistilBertModel.from_pretrained(model_name)
+        self.bert = DistilBertForSequenceClassification\
+            .from_pretrained(model_name)
         self.dropout = nn.Dropout(p=0.3)
         self.out = nn.Linear(self.bert.config.hidden_size, n_classes)
 
@@ -23,14 +22,13 @@ class DistilBertSentimentClassifier(pl.LightningModule):
             input_ids=input_ids,
             attention_mask=attention_mask,
         )
-
-        output = self.dropout(out.last_hidden_state)
-        return self.out(output)
+        return out.logits
 
     def step(self, batch):
-        input_ids = batch["input_ids"]
-        attention_mask = batch["attention_mask"]
-        labels = batch["labels"] - 1
+        labels, tokens = batch
+        input_ids = tokens["input_ids"]
+        attention_mask = tokens["attention_mask"]
+        labels = labels - 1
 
         logits = self(
             input_ids=input_ids,
