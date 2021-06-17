@@ -4,19 +4,14 @@ from azureml.core.conda_dependencies import CondaDependencies
 
 
 ws = Workspace.from_config()
-
-env = Environment("experiment_env")
-
-packages = CondaDependencies.create(conda_packages=['pip'],
-                                    pip_packages=['azureml-defaults'])
-env.python.conda_dependencies = packages
-
+env = Environment.from_pip_requirements("experiment_env", file_path="requirements.txt")
 
 script_config = ScriptRunConfig(
-    source_directory="src/models/",
-    script="train_model.py",
-    arguments=["--epochs", 2, "--gpus", 1],
+    source_directory=".",
+    script="src/models/train_model.py",
+    arguments=["--epochs", 2, "--gpus", 1, "--azure"],
     environment=env,
+    
 )
 
 experiment = Experiment(workspace=ws,

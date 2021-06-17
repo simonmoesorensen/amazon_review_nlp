@@ -63,7 +63,6 @@ class AmazonReviewFullDataModule(pl.LightningDataModule):
         return train_sampler, valid_sampler
 
     def setup(self, stage: Optional[str] = None):
-        print("Downloading data...")
         self.amazon_train = AmazonReviewPolarity(self.data_dir, split="train")
         self.amazon_test = AmazonReviewPolarity(self.data_dir, split="test")
 

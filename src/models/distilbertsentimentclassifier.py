@@ -8,12 +8,9 @@ import torch.nn.functional as F
 class DistilBertSentimentClassifier(pl.LightningModule):
     def __init__(self, model_name):
         super(DistilBertSentimentClassifier, self).__init__()
-        n_classes = 5
 
         self.bert = DistilBertForSequenceClassification\
             .from_pretrained(model_name)
-        self.dropout = nn.Dropout(p=0.3)
-        self.out = nn.Linear(self.bert.config.hidden_size, n_classes)
 
         self.criterion = nn.CrossEntropyLoss()
 
@@ -38,22 +35,26 @@ class DistilBertSentimentClassifier(pl.LightningModule):
         probs = F.softmax(logits, dim=1)
         loss = self.criterion(probs, labels)
 
-        return loss
+        preds = self.get_prediction(logits)
+        accuracy = self.flat_accuracy(preds, labels)
+
+        return loss, accuracy
 
     def training_step(self, batch, batch_idx):
-        loss = self.step(batch)
+        loss, accuracy = self.step(batch)
         self.log("train_loss", loss)
+        self.log("train_acc", accuracy)
         return loss
 
     def validation_step(self, batch, batch_idx):
-        loss = self.step(batch)
+        loss, accuracy = self.step(batch)
         self.log("val_loss", loss)
-        return loss
+        self.log("val_acc", accuracy)
 
     def test_step(self, batch, batch_idx):
-        loss = self.step(batch)
+        loss, accuracy = self.step(batch)
         self.log("test_loss", loss)
-        return loss
+        self.log("test_acc", accuracy)
 
     def configure_optimizers(self):
         optimizer = optim.Adam(self.parameters(), lr=1e-3)
@@ -64,6 +65,6 @@ class DistilBertSentimentClassifier(pl.LightningModule):
         return preds
 
     def flat_accuracy(self, preds, labels):
-        pred_flat = torch.argmax(preds, axis=1).flatten()
+        pred_flat = preds.flatten()
         labels_flat = labels.flatten()
         return torch.sum(pred_flat == labels_flat) / len(labels_flat)

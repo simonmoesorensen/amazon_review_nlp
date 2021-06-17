@@ -4,11 +4,10 @@ from azureml.core.run import Run
 
 
 class AzureMLLogger(LightningLoggerBase):
-    def __init__(self, run):
+    def __init__(self):
         super().__init__()
 
-        child_run = Run.get_context()
-        self.run = child_run.parent
+        self.run = Run.get_context()
 
     @rank_zero_only
     def log_hyperparams(self, params):

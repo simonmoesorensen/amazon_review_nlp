@@ -19,13 +19,6 @@ def parse_args():
     parser = argparse.ArgumentParser(
         description="Amazon review sentiment classification task"
     )
-    # parser.add_argument(
-    #     "--batch-size",
-    #     type=int,
-    #     default=64,
-    #     metavar="N",
-    #     help="input batch size for training (default: 64)",
-    # )
     parser.add_argument(
         "--gpus",
         type=int,
@@ -40,46 +33,19 @@ def parse_args():
         metavar="N",
         help="number of epochs to train (default: 3)",
     )
-    # parser.add_argument(
-    #     "--lr",
-    #     type=float,
-    #     default=1.0,
-    #     metavar="LR",
-    #     help="learning rate (default: 1.0)",
-    # )
-    # parser.add_argument(
-    #     "--dry-run",
-    #     action="store_true",
-    #     default=False,
-    #     help="quickly check a single pass",
-    # )
-    # parser.add_argument(
-    #     "--seed",
-    #     type=int,
-    #     default=1,
-    #     metavar="S",
-    #     help="random seed (default: 1)"
-    # )
-    # parser.add_argument(
-    #     "--log-interval",
-    #     type=int,
-    #     default=10,
-    #     metavar="N",
-    #     help="batches to wait before logging training",
-    # )
-    # parser.add_argument(
-    #     "--no-test",
-    #     action="store_false",
-    #     default=True,
-    #     help="run a test pass after training",
-    # )
-    # parser.add_argument(
-    #     "--logger",
-    #     type=str,
-    #     default="tensorboard",
-    #     metavar="N",
-    #     help="logger to use (wandb or tensorboard)",
-    # )
+    parser.add_argument(
+        "--batch-size",
+        type=int,
+        default=128,
+        metavar="N",
+        help="batch size (default: 128)",
+    )
+    parser.add_argument(
+        "--azure",
+        action="store_true",
+        default=False,
+        help="Run from Azure.",
+    )
     args = parser.parse_args()
     return args
 
@@ -89,9 +55,7 @@ def train_model(args):
     model = DistilBertSentimentClassifier(model_name)
     tokenizer = DistilBertTokenizer.from_pretrained(model_name)
 
-    data = AmazonReviewFullDataModule(tokenizer, batch_size=128)
-
-    logger = AzureMLLogger()
+    data = AmazonReviewFullDataModule(tokenizer, batch_size=args.batch_size)
 
     trainer_params = {
         "gpus": args.gpus,
@@ -99,7 +63,7 @@ def train_model(args):
         "precision": 16 if args.gpus > 0 else 32,
         "progress_bar_refresh_rate": 20,
         "log_every_n_steps": 10,
-        "logger": logger,
+        "logger": AzureMLLogger() if args.azure else None,
         "callbacks": [
             EarlyStopping(
                 monitor="val_loss",
@@ -123,3 +87,6 @@ def train_model(args):
         train_dataloader=data.test_dataloader(),
         val_dataloaders=data.test_dataloader(),
     )
+
+if __name__ == "__main__":
+    main()
