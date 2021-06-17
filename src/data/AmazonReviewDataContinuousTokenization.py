@@ -95,7 +95,7 @@ class AmazonReviewFullDataModule(pl.LightningDataModule):
             batch_size=self.batch_size,
             collate_fn=self.collate_fn,
             # sampler=self.train_sampler,
-            # num_workers=16,
+            num_workers=6,
         )
 
     # def valid_dataloader(self):
@@ -112,7 +112,7 @@ class AmazonReviewFullDataModule(pl.LightningDataModule):
             self.amazon_test,
             batch_size=self.batch_size,
             collate_fn=self.collate_fn,
-            num_workers=16,
+            num_workers=6,
         )
 
     def tokenize(self, example):

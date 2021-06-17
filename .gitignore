@@ -90,3 +90,5 @@ target/
 .mypy_cache/
 
 lightning_logs/
+.amlignore
+*.amltmp

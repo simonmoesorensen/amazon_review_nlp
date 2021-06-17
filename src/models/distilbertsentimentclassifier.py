@@ -62,3 +62,8 @@ class DistilBertSentimentClassifier(pl.LightningModule):
     def get_prediction(self, logits: torch.Tensor):
         _, preds = torch.max(logits, dim=1)
         return preds
+
+    def flat_accuracy(self, preds, labels):
+        pred_flat = torch.argmax(preds, axis=1).flatten()
+        labels_flat = labels.flatten()
+        return torch.sum(pred_flat == labels_flat) / len(labels_flat)
