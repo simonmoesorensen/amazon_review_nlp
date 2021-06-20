@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import pytest
 import pandas as pd
 
@@ -6,8 +8,10 @@ from src.data.AmazonReviewTokenized import AmazonReviewTokenized, ToTensor
 
 @pytest.fixture(autouse=True)
 def mock_read_json(monkeypatch):
+    project_dir = Path(__file__).resolve().parents[2]
+
     def load_data():
-        return pd.read_json('../test_files/test.json')
+        return pd.read_json(project_dir.joinpath('tests/test_files/test.json'))
 
     data = load_data()
     monkeypatch.setattr(pd, 'read_json', lambda x: data)
@@ -29,4 +33,4 @@ def test_getitem():
 
     item = next(iter(dataset))
     assert item is not None
-    assert item['labels'].item() == 1
+    assert item['labels'].item() == 3

@@ -66,6 +66,7 @@ def tokenize(tokenizer: transformers.PreTrainedTokenizer,
     return {
         "input_ids": encoded_sentence["input_ids"],
         "attention_mask": encoded_sentence["attention_mask"],
+        "token_type_ids": encoded_sentence['token_type_ids']
     }
 
 
@@ -75,7 +76,8 @@ def tokenize_data(args: argparse.Namespace,
 
     data_dict = {'input_ids': [],
                  'attention_mask': [],
-                 'labels': []}
+                 'labels': [],
+                 'token_type_ids': []}
 
     parsed_rows = 0
     for batch in data:
@@ -89,6 +91,7 @@ def tokenize_data(args: argparse.Namespace,
         data_dict['labels'] += labels
         data_dict['input_ids'] += tokenized_values['input_ids']
         data_dict['attention_mask'] += tokenized_values['attention_mask']
+        data_dict['token_type_ids'] += tokenized_values['token_type_ids']
         parsed_rows += len(batch)
 
         if parsed_rows >= args.max_rows:
