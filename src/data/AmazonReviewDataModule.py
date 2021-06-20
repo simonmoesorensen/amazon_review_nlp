@@ -4,9 +4,7 @@ from typing import Optional
 
 from torch.utils.data import DataLoader
 from torch.utils.data.sampler import SubsetRandomSampler
-from torchtext.datasets import AmazonReviewFull
 import pytorch_lightning as pl
-import torch
 import numpy as np
 
 from src.data.AmazonReviewTokenized import AmazonReviewTokenized, ToTensor

@@ -2,14 +2,12 @@
 import torch
 
 from src.models.bertsentimentclassifier import BertSentimentClassifier
-from src.data.AmazonReviewDataModule import AmazonReviewFullDataModule
+from src.data.AmazonReviewDataModule import AmazonReviewDataModule
 
 
-global model
 model = BertSentimentClassifier("bert-base-cased")
 
-global data
-data = AmazonReviewFullDataModule().test_dataloader()
+data = AmazonReviewDataModule().test_dataloader()
 
 
 def test_constructor():

@@ -1,6 +1,16 @@
+import pandas as pd
 import pytest
 
 from src.data.AmazonReviewDataModule import AmazonReviewDataModule
+
+
+@pytest.fixture(autouse=True)
+def mock_read_json(monkeypatch):
+    def load_data():
+        return pd.read_json('../test_files/test.json')
+
+    data = load_data()
+    monkeypatch.setattr(pd, 'read_json', lambda x: data)
 
 
 def test_constructor():

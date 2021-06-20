@@ -1,4 +1,16 @@
+import pytest
+import pandas as pd
+
 from src.data.AmazonReviewTokenized import AmazonReviewTokenized, ToTensor
+
+
+@pytest.fixture(autouse=True)
+def mock_read_json(monkeypatch):
+    def load_data():
+        return pd.read_json('../test_files/test.json')
+
+    data = load_data()
+    monkeypatch.setattr(pd, 'read_json', lambda x: data)
 
 
 def test_constructor():
@@ -9,10 +21,7 @@ def test_constructor():
 
 def test_len():
     dataset = AmazonReviewTokenized()
-
-    # Can't check actual length as it depends on the size of the processed
-    # data file
-    assert type(len(dataset)) == int
+    assert len(dataset) == 50000
 
 
 def test_getitem():
@@ -20,3 +29,4 @@ def test_getitem():
 
     item = next(iter(dataset))
     assert item is not None
+    assert item['labels'].item() == 1
