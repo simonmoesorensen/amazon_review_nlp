@@ -1,5 +1,6 @@
-from src.data.AmazonReviewDataContinuousTokenization import AmazonReviewFullDataModule
-from src.models.distilbertsentimentclassifier import DistilBertSentimentClassifier
+from azureml.core import Run
+
+from src.data.AmazonReviewDataModule import AmazonReviewDataModule
 from src.models.AzureMLLogger import AzureMLLogger
 from transformers import DistilBertTokenizer
 
@@ -8,6 +9,8 @@ from pytorch_lightning.callbacks import ModelCheckpoint
 from pytorch_lightning.callbacks.early_stopping import EarlyStopping
 
 import argparse
+
+from src.models.bertsentimentclassifier import BertSentimentClassifier
 
 
 def main():
@@ -51,11 +54,11 @@ def parse_args():
 
 
 def train_model(args):
-    model_name = "distilbert-base-cased"
-    model = DistilBertSentimentClassifier(model_name)
-    tokenizer = DistilBertTokenizer.from_pretrained(model_name)
+    model_name = "bert-base-cased"
+    model = BertSentimentClassifier(model_name)
 
-    data = AmazonReviewFullDataModule(tokenizer, batch_size=args.batch_size)
+    data = AmazonReviewDataModule(batch_size=args.batch_size,
+                                  num_workers=8)
 
     trainer_params = {
         "gpus": args.gpus,
@@ -84,9 +87,14 @@ def train_model(args):
     trainer = pl.Trainer(**trainer_params)
     trainer.fit(
         model,
-        train_dataloader=data.test_dataloader(),
-        val_dataloaders=data.test_dataloader(),
+        train_dataloader=data.train_dataloader(),
+        val_dataloaders=data.val_dataloader()
     )
+
+run = Run.get_context()
+
+run.complete()
+
 
 if __name__ == "__main__":
     main()
