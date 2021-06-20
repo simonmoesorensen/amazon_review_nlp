@@ -1,5 +1,4 @@
 from pathlib import Path
-from typing import Tuple
 
 import numpy as np
 import pandas as pd
@@ -17,7 +16,7 @@ class ToTensor(object):
 
         return {'input_ids': torch.from_numpy(np.array(input_ids)),
                 'attention_mask': torch.from_numpy(np.array(attention_mask)),
-                'label': torch.from_numpy(np.array(label))}
+                'labels': torch.from_numpy(np.array(label))}
 
 
 class AmazonReviewTokenized(Dataset):
@@ -25,10 +24,13 @@ class AmazonReviewTokenized(Dataset):
 
     def __init__(self, train=True, transform=None):
         name = 'train' if train else 'test'
-        self.data = pd.read_json(project_dir.joinpath(
-            f'data/processed/{name}.json'))
+        file_path = project_dir.joinpath(f'data/processed/{name}.json')
 
-        self.transfrom = transform
+        if not file_path.exists():
+            raise FileNotFoundError(f'Could not find the file: {file_path}')
+
+        self.data = pd.read_json(file_path)
+        self.transform = transform
 
     def __len__(self) -> int:
         return len(self.data)
@@ -39,7 +41,7 @@ class AmazonReviewTokenized(Dataset):
 
         sample = self.data.iloc[idx, :]
 
-        if self.transfrom:
-            sample = self.transfrom(sample)
+        if self.transform:
+            sample = self.transform(sample)
 
         return sample

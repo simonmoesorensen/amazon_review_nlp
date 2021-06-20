@@ -2,7 +2,7 @@
 import torch
 
 from src.models.bertsentimentclassifier import BertSentimentClassifier
-from src.data.AmazonReviewData import AmazonReviewFullDataModule
+from src.data.AmazonReviewDataModule import AmazonReviewFullDataModule
 
 
 global model
