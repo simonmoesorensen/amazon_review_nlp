@@ -3,7 +3,6 @@ Download the AmazonReviewFull dataset from the torchtext.dataset library
 and insert the untokenized data into {root}/data/raw
 """
 
-import logging
 from pathlib import Path
 
 from torchtext.datasets import AmazonReviewFull
@@ -25,12 +24,20 @@ def download_data() -> None:
 
 
 def main():
-    logging.info('Making raw dataset...')
-    logging.info(f'Data exists: {data_exists()}')
+    print('Making raw dataset...')
+
+    print('Creating data folder with raw and processed if they dont exist')
+    project_dir.joinpath('data').mkdir(parents=True, exist_ok=True)
+    project_dir.joinpath('data/raw/').mkdir(parents=True, exist_ok=True)
+    project_dir.joinpath('data/processed/').mkdir(parents=True,
+                                                  exist_ok=True)
+
+    print(f'Amazon data exists: {data_exists()}')
     if not data_exists():
-        logging.info('Downloading data')
+        print('Downloading data')
         download_data()
-    logging.info('Raw dataset created')
+
+    print('Raw dataset created')
 
 
 if __name__ == '__main__':

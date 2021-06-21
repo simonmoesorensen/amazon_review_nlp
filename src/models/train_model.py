@@ -44,10 +44,23 @@ def parse_args():
         help="batch size (default: 128)",
     )
     parser.add_argument(
+        "--num-workers",
+        type=int,
+        default=6,
+        metavar="N",
+        help="Number of workers for the dataloader (default: 6)",
+    )
+    parser.add_argument(
         "--azure",
         action="store_true",
         default=False,
         help="Run from Azure.",
+    )
+    parser.add_argument(
+        "--data-path",
+        type=str,
+        default='data/processed/',
+        help="Path to data (default: data/processed/)",
     )
     args = parser.parse_args()
     return args
@@ -57,13 +70,15 @@ def train_model(args):
     model_name = "bert-base-cased"
     model = BertSentimentClassifier(model_name)
 
+    print(f'Data path: {args.data_path}')
     data = AmazonReviewDataModule(batch_size=args.batch_size,
-                                  num_workers=8)
+                                  num_workers=args.num_workers,
+                                  data_path=args.data_path)
 
     trainer_params = {
         "gpus": args.gpus,
         "max_epochs": args.epochs,
-        "precision": 16 if args.gpus > 0 else 32,
+        "precision": 32 if args.gpus > 0 else 32,
         "progress_bar_refresh_rate": 20,
         "log_every_n_steps": 10,
         "logger": AzureMLLogger() if args.azure else None,

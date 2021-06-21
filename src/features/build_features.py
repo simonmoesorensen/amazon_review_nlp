@@ -32,19 +32,19 @@ def parse_args() -> argparse.Namespace:
         help="Model name from: https://huggingface.co/models"
     )
     parser.add_argument(
-        "--max_seq_length",
+        "--max-seq-length",
         type=int,
         default=128,
         help="Maximum length of a sequence"
     )
     parser.add_argument(
-        "--chunk_size",
+        "--chunk-size",
         type=int,
         default=50000,
         help="Size of batch to tokenize pr iteration"
     )
     parser.add_argument(
-        "--max_rows",
+        "--max-rows",
         type=int,
         default=.05e6, # 3.5e6,
         help="Ability to tokenize a subset of the total data"
@@ -105,7 +105,7 @@ def tokenize_data(args: argparse.Namespace,
 def save_dict(data: Dict, file_name: str) -> None:
     file_path = processed_dir.joinpath(file_name)
     print(f'Saving data to {file_path}')
-    with open(file_path, 'w') as file:
+    with open(file_path, 'x') as file:
         json.dump(data, file)
     print('File saved')
 

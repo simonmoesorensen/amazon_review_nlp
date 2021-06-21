@@ -17,21 +17,25 @@ class AmazonReviewDataModule(pl.LightningDataModule):
             self,
             val_size: float = 0.2,
             batch_size: int = 32,
-            num_workers: int = 1
+            num_workers: int = 1,
+            data_path: str = None
     ):
         super().__init__()
         self.batch_size = batch_size
         self.val_size = val_size
         self.num_workers = num_workers
 
-        train_path = "data/processed/train.json"
-        test_path = "data/processed/test.json"
-        if (not project_dir.joinpath(train_path).exists() or
-                not project_dir.joinpath(test_path).exists()):
-            raise FileNotFoundError('Could not find processed data. '
-                                    'Did you run make_dataset.py and '
-                                    'build_features.py?')
+        if not data_path:
+            data_path = "data/processed/"
+            train_path = "%strain.json" % data_path
+            test_path = "%stest.json" % data_path
+            if (not project_dir.joinpath(train_path).exists() or
+                    not project_dir.joinpath(test_path).exists()):
+                raise FileNotFoundError('Could not find processed data. '
+                                        'Did you run make_dataset.py and '
+                                        'build_features.py?')
 
+        self.data_path = data_path
         self.setup()
         self.train_sampler, self.valid_sampler = self._get_samplers()
 
@@ -54,9 +58,11 @@ class AmazonReviewDataModule(pl.LightningDataModule):
         transform = ToTensor()
 
         self.train_set = AmazonReviewTokenized(train=True,
-                                               transform=transform)
+                                               transform=transform,
+                                               data_path=self.data_path)
         self.test_set = AmazonReviewTokenized(train=False,
-                                              transform=transform)
+                                              transform=transform,
+                                              data_path=self.data_path)
         print('Finished setup')
 
     def train_dataloader(self):

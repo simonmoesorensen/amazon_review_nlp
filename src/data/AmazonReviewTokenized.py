@@ -23,9 +23,16 @@ class ToTensor(object):
 class AmazonReviewTokenized(Dataset):
     """Amazon Review dataset with a tokenizer"""
 
-    def __init__(self, train=True, transform=None):
+    def __init__(self,
+                 train: bool = True,
+                 transform=None,
+                 data_path=None):
         name = 'train' if train else 'test'
-        file_path = project_dir.joinpath(f'data/processed/{name}.json')
+
+        if not data_path:
+            file_path = project_dir.joinpath(f'{data_path + name}.json')
+        else:
+            file_path = Path(data_path).joinpath(f'{name}.json')
 
         if not file_path.exists():
             raise FileNotFoundError(f'Could not find the file: {file_path}')
