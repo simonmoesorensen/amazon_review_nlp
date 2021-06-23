@@ -18,4 +18,4 @@ dependencies:
       - wandb
       - azureml-defaults
   - pip
-name: azureml_c673f63799fa39f37df4a1bb05f0fd24
+name: nlp_env
