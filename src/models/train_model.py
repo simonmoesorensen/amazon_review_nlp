@@ -1,5 +1,6 @@
 from pathlib import Path
 
+import torch
 from azureml.core import Run
 
 from src.data.AmazonReviewDataModule import AmazonReviewDataModule
@@ -125,7 +126,7 @@ def train_model(args):
     )
 
     print('Exporting model')
-    joblib.dump(value=model, filename='outputs/model.pkl')
+    torch.save(obj=model, f='outputs/model.pt')
 
     if args.azure:
         run.complete()
