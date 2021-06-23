@@ -6,8 +6,6 @@ from transformers import (
     DistilBertForSequenceClassification,
     DistilBertTokenizer
 )
-# import torch
-# from torch.nn.functional import softmax
 
 
 # Load the workspace from the saved config file
@@ -48,18 +46,4 @@ run.register_model(model_path=model_path,
 run.register_model(model_path=tokenizer_path,
                    model_name=tokenizer_name)
 
-    
-
 print('Pretrained model registered.')
-
-
-# test_text = "I love you."
-
-# model_name = "distilbert-base-uncased-finetuned-sst-2-english"
-# tokenizer = DistilBertTokenizer.from_pretrained(model_name)
-# model = DistilBertForSequenceClassification.from_pretrained(model_name,
-#                                                             num_labels=2)
-
-# x = tokenizer(test_text, return_tensors="pt")
-# out = model(**x)
-# probs = softmax(out.logits, dim=1)
