@@ -19,16 +19,17 @@ jobs:
         python-version: 3.6.12
     - name: Install dependencies
       run: |
-        $CONDA/bin/conda env update --file conda_dependencies.yml --name base
+        conda env update --file conda_dependencies.yml --name base
+        conda activate base
     - name: Test with pytest
       run: |
         conda install pytest
-        $CONDA/bin/pytest
+        pytest
     - name: Sort imports with isort
       run: |
         conda install isort
-        $CONDA/bin/isort src
+        isort src
     - name: Format code with flake8
       run: |
-        $CONDA/bin/conda install flake8
-        $CONDA/bin/flake8 src
+        conda install flake8
+        flake8 src
