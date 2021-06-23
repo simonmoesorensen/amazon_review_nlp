@@ -5,40 +5,46 @@ from azureml.core.authentication import InteractiveLoginAuthentication
 
 project_dir = Path(__file__).resolve().parents[2]
 
-interactive_auth = InteractiveLoginAuthentication(
-    tenant_id="f251f123-c9ce-448e-9277-34bb285911d9")
 
-ws = Workspace.from_config()
-requirements = project_dir.joinpath("conda_dependencies.yml")
+def train_on_cloud():
+    interactive_auth = InteractiveLoginAuthentication(
+        tenant_id="f251f123-c9ce-448e-9277-34bb285911d9")
 
-env = Environment.from_conda_specification(name='experiment_env',
-                                           file_path=str(requirements))
+    ws = Workspace.from_config()
+    requirements = project_dir.joinpath("conda_dependencies.yml")
 
-env.docker.enabled = True
-env.docker.base_image = 'mcr.microsoft.com/azureml/openmpi4.1.0-cuda11.0.3-cudnn8-ubuntu18.04'
+    env = Environment.from_conda_specification(name='experiment_env',
+                                               file_path=str(requirements))
 
-compute_target = ws.compute_targets['mlops-sbsosfftt']
+    env.docker.enabled = True
+    env.docker.base_image = 'mcr.microsoft.com/azureml/openmpi4.1.0-cuda11.0.3-cudnn8-ubuntu18.04'
 
-datastore = ws.get_default_datastore()
-data_ref = datastore.path('amazon-review/data').as_mount()
+    compute_target = ws.compute_targets['mlops-sbsosfftt']
 
-script_config = ScriptRunConfig(
-    source_directory=str(project_dir),
-    compute_target=compute_target,
-    script='src/models/train_model.py',
-    arguments=["--epochs", 2,
-               "--gpus", 1,
-               "--azure",
-               "--batch-size", 128,
-               "--data-path", str(data_ref)],
-    environment=env
-)
+    datastore = ws.get_default_datastore()
+    data_ref = datastore.path('amazon-review/data').as_mount()
 
-script_config.run_config.data_references[data_ref.data_reference_name] = data_ref.to_config()
+    script_config = ScriptRunConfig(
+        source_directory=str(project_dir),
+        compute_target=compute_target,
+        script='src/models/train_model.py',
+        arguments=["--epochs", 2,
+                   "--gpus", 1,
+                   "--azure",
+                   "--batch-size", 128,
+                   "--data-path", str(data_ref)],
+        environment=env
+    )
 
-experiment = Experiment(workspace=ws,
-                        name="distilbert-amazon-review-classification")
+    script_config.run_config.data_references[data_ref.data_reference_name] = data_ref.to_config()
 
-print('Submitting experiment')
-run = experiment.submit(config=script_config)
-print('Submitted')
+    experiment = Experiment(workspace=ws,
+                            name="distilbert-amazon-review-classification")
+
+    print('Submitting experiment')
+    run = experiment.submit(config=script_config)
+    print('Submitted')
+
+
+if __name__ == '__main__':
+    train_on_cloud()
