@@ -8,20 +8,20 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     steps:
     - name: Checkout
       uses: actions/checkout@v2
-    - name: Setup conda
-      uses: conda-incubator/setup-miniconda@v2
+    - name: Set up Python 3.6.2
+      uses: actions/setup-python@v2
       with:
-        activate-environment: nlp_env
-        environment-file: conda_dependencies.yml
+        python-version: 3.6.2
+    - name: Install dependencies
+      run: |
+        $CONDA/bin/conda env update --file conda_dependencies.yml --name base
     - name: Test with pytest
       run: |
-        conda activate nlp_env
         pytest -v
     - name: Sort imports with isort
       run: |
