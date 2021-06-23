@@ -125,7 +125,7 @@ def train_model(args):
     )
 
     print('Exporting model')
-    torch.save(obj=model, f='outputs/model.pt')
+    torch.save(obj=model.state_dict(), f='outputs/model.pt')
 
     if args.azure:
         run.complete()
