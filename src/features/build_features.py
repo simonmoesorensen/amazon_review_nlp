@@ -35,19 +35,19 @@ def parse_args(args) -> argparse.Namespace:
     parser.add_argument(
         "--max-seq-length",
         type=int,
-        default=512,
+        default=256,
         help="Maximum length of a sequence"
     )
     parser.add_argument(
         "--chunk-size",
         type=int,
-        default=25000,
+        default=5000,
         help="Size of batch to tokenize pr iteration"
     )
     parser.add_argument(
         "--max-rows",
         type=int,
-        default=.1e6,  # 3.5e6,
+        default=.025e6,  # 3.5e6,
         help="Ability to tokenize a subset of the total data"
     )
     args = parser.parse_args(args)

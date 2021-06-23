@@ -44,7 +44,7 @@ def parse_args():
     parser.add_argument(
         "--batch-size",
         type=int,
-        default=128,
+        default=4,
         metavar="N",
         help="batch size (default: 128)",
     )
@@ -81,7 +81,7 @@ def train_model(args):
     if args.azure:
         run = Run.get_context()
 
-    model_name = "distilbert-base-cased"
+    model_name = "distilbert-base-uncased"
     model = DistilBertSentimentClassifier(model_name, args.lr)
 
     print(f'Data path: {args.data_path}')
