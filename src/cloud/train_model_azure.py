@@ -29,7 +29,7 @@ def train_on_cloud():
         source_directory=str(project_dir),
         compute_target=compute_target,
         script='src/models/train_model.py',
-        arguments=["--epochs", 1,
+        arguments=["--epochs", 15,
                    "--gpus", 1,
                    "--azure",
                    "--batch-size", 16,
