@@ -89,6 +89,8 @@ target/
 # Mypy cache
 .mypy_cache/
 
+*.pkl
+
 lightning_logs/
 .amlignore
 *.amltmp
