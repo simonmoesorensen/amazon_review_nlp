@@ -9,7 +9,8 @@ class DistilBertSentimentClassifier(pl.LightningModule):
         super(DistilBertSentimentClassifier, self).__init__()
 
         self.lr = lr
-        self.bert = DistilBertForSequenceClassification.from_pretrained(model_name)
+        self.bert = DistilBertForSequenceClassification.\
+            from_pretrained(model_name)
 
     def forward(self, input_ids, attention_mask, labels):
         out = self.bert(

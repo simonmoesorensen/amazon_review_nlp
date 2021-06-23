@@ -47,7 +47,7 @@ def parse_args(args) -> argparse.Namespace:
     parser.add_argument(
         "--max-rows",
         type=int,
-        default=.1e6, # 3.5e6,
+        default=.1e6,  # 3.5e6,
         help="Ability to tokenize a subset of the total data"
     )
     args = parser.parse_args(args)

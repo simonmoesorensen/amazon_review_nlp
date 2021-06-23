@@ -1,11 +1,9 @@
 from pathlib import Path
 
-import torch
 from azureml.core import Run
 
 from src.data.AmazonReviewDataModule import AmazonReviewDataModule
 from src.models.AzureMLLogger import AzureMLLogger
-# from transformers import DistilBertTokenizer
 
 import pytorch_lightning as pl
 from pytorch_lightning.callbacks import ModelCheckpoint
@@ -14,10 +12,11 @@ from pytorch_lightning.callbacks.early_stopping import EarlyStopping
 import joblib
 import argparse
 
-from src.models.bertsentimentclassifier import BertSentimentClassifier
-from src.models.distilbertsentimentclassifier import DistilBertSentimentClassifier
+from src.models.distilbertsentimentclassifier \
+    import DistilBertSentimentClassifier
 
 project_dir = Path(__file__).resolve().parents[2]
+
 
 def main():
     args = parse_args()
@@ -91,6 +90,9 @@ def train_model(args):
                                   data_path=str(project_dir.joinpath(
                                       args.data_path)))
 
+    checkpoint = "outputs/models/DistilBertSentimentClassifier" \
+                 "/checkpoints/weights"
+
     trainer_params = {
         "gpus": args.gpus,
         "max_epochs": args.epochs,
@@ -107,7 +109,7 @@ def train_model(args):
                 mode="min"
             ),
             ModelCheckpoint(
-                dirpath="outputs/models/BertSentimentClassifier/checkpoints/weights",
+                dirpath=checkpoint,
                 verbose=True,
                 monitor="val_loss",
                 mode="min",
@@ -123,7 +125,7 @@ def train_model(args):
     )
 
     print('Exporting model')
-    joblib.dump(model, 'outputs/model.pkl')
+    joblib.dump(value=model, filename='outputs/model.pkl')
 
     if args.azure:
         run.complete()
