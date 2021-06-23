@@ -29,16 +29,14 @@ class AmazonReviewTokenized(Dataset):
                  data_path=None):
         name = 'train' if train else 'test'
 
-        if not data_path:
-            file_path = project_dir.joinpath(f'{data_path + name}.json')
-        else:
-            file_path = Path(data_path).joinpath(f'{name}.json')
+        file_path = Path(data_path).joinpath(f'{name}.json')
 
         if not file_path.exists():
             raise FileNotFoundError(f'Could not find the file: {file_path}')
 
         self.data = pd.read_json(file_path)
         self.transform = transform
+        self.threshold = 3
 
     def __len__(self) -> int:
         return len(self.data)
@@ -51,5 +49,8 @@ class AmazonReviewTokenized(Dataset):
 
         if self.transform:
             sample = self.transform(sample)
+
+        # Map labels to binary
+        sample['labels'] = (sample['labels'] > self.threshold).type(torch.long)
 
         return sample

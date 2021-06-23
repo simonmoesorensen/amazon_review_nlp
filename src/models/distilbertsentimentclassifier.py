@@ -6,34 +6,30 @@ import torch.nn.functional as F
 
 
 class DistilBertSentimentClassifier(pl.LightningModule):
-    def __init__(self, model_name):
+    def __init__(self, model_name, lr=1e-3, n_classes=2):
         super(DistilBertSentimentClassifier, self).__init__()
 
-        self.bert = DistilBertForSequenceClassification\
-            .from_pretrained(model_name)
+        self.lr = lr
+        self.bert = DistilBertForSequenceClassification.from_pretrained(model_name)
 
-        self.criterion = nn.CrossEntropyLoss()
-
-    def forward(self, input_ids, attention_mask):
+    def forward(self, input_ids, attention_mask, labels):
         out = self.bert(
             input_ids=input_ids,
             attention_mask=attention_mask,
+            labels=labels
         )
-        return out.logits
+        return out.loss, out.logits
 
     def step(self, batch):
-        labels, tokens = batch
-        input_ids = tokens["input_ids"]
-        attention_mask = tokens["attention_mask"]
-        labels = labels - 1
+        labels = batch['labels']
+        input_ids = batch["input_ids"]
+        attention_mask = batch["attention_mask"]
 
-        logits = self(
+        loss, logits = self(
             input_ids=input_ids,
             attention_mask=attention_mask,
+            labels=labels
         )
-
-        probs = F.softmax(logits, dim=1)
-        loss = self.criterion(probs, labels)
 
         preds = self.get_prediction(logits)
         accuracy = self.flat_accuracy(preds, labels)
@@ -57,7 +53,7 @@ class DistilBertSentimentClassifier(pl.LightningModule):
         self.log("test_acc", accuracy)
 
     def configure_optimizers(self):
-        optimizer = optim.Adam(self.parameters(), lr=1e-3)
+        optimizer = optim.Adam(self.parameters(), lr=self.lr)
         return optimizer
 
     def get_prediction(self, logits: torch.Tensor):

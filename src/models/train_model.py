@@ -1,17 +1,23 @@
+from pathlib import Path
+
+import torch
 from azureml.core import Run
 
 from src.data.AmazonReviewDataModule import AmazonReviewDataModule
 from src.models.AzureMLLogger import AzureMLLogger
-from transformers import DistilBertTokenizer
+# from transformers import DistilBertTokenizer
 
 import pytorch_lightning as pl
 from pytorch_lightning.callbacks import ModelCheckpoint
 from pytorch_lightning.callbacks.early_stopping import EarlyStopping
 
+import joblib
 import argparse
 
 from src.models.bertsentimentclassifier import BertSentimentClassifier
+from src.models.distilbertsentimentclassifier import DistilBertSentimentClassifier
 
+project_dir = Path(__file__).resolve().parents[2]
 
 def main():
     args = parse_args()
@@ -62,18 +68,28 @@ def parse_args():
         default='data/processed/',
         help="Path to data (default: data/processed/)",
     )
+    parser.add_argument(
+        "--lr",
+        type=float,
+        default=1e-3,
+        help="Learning rate of ADAM optimizer (default: 1e-3)",
+    )
     args = parser.parse_args()
     return args
 
 
 def train_model(args):
-    model_name = "bert-base-cased"
-    model = BertSentimentClassifier(model_name)
+    if args.azure:
+        run = Run.get_context()
+
+    model_name = "distilbert-base-cased"
+    model = DistilBertSentimentClassifier(model_name, args.lr)
 
     print(f'Data path: {args.data_path}')
     data = AmazonReviewDataModule(batch_size=args.batch_size,
                                   num_workers=args.num_workers,
-                                  data_path=args.data_path)
+                                  data_path=str(project_dir.joinpath(
+                                      args.data_path)))
 
     trainer_params = {
         "gpus": args.gpus,
@@ -91,7 +107,7 @@ def train_model(args):
                 mode="min"
             ),
             ModelCheckpoint(
-                dirpath="models/BertSentimentClassifier/checkpoints/weights",
+                dirpath="outputs/models/BertSentimentClassifier/checkpoints/weights",
                 verbose=True,
                 monitor="val_loss",
                 mode="min",
@@ -106,9 +122,11 @@ def train_model(args):
         val_dataloaders=data.val_dataloader()
     )
 
-run = Run.get_context()
+    print('Exporting model')
+    joblib.dump(model, 'outputs/model.pkl')
 
-run.complete()
+    if args.azure:
+        run.complete()
 
 
 if __name__ == "__main__":
