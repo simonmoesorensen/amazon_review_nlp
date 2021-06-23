@@ -7,7 +7,7 @@ from src.features.build_features import parse_args, tokenize, tokenize_data
 def test_parse_args():
     args = parse_args(['--chunk-size', '10'])
     assert args.chunk_size == 10
-    assert args.max_seq_length == 512
+    assert args.max_seq_length == 256
 
 
 def test_tokenize():
