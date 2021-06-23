@@ -32,7 +32,7 @@ def train_on_cloud():
         arguments=["--epochs", 2,
                    "--gpus", 1,
                    "--azure",
-                   "--batch-size", 128,
+                   "--batch-size", 16,
                    "--lr", 1e-4,
                    "--data-path", str(data_ref)],
         environment=env
