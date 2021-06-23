@@ -7,6 +7,7 @@ __pycache__/
 
 # Distribution / packaging
 .Python
+venv/
 env/
 build/
 develop-eggs/
@@ -88,7 +89,8 @@ target/
 # Mypy cache
 .mypy_cache/
 
-*.amltmp
-*.amlignore
-
 *.pkl
+
+lightning_logs/
+.amlignore
+*.amltmp
