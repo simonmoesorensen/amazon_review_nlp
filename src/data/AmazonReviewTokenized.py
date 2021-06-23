@@ -24,12 +24,12 @@ class AmazonReviewTokenized(Dataset):
     """Amazon Review dataset with a tokenizer"""
 
     def __init__(self,
+                 data_path: str,
                  train: bool = True,
-                 transform=None,
-                 data_path=None):
+                 transform=None):
         name = 'train' if train else 'test'
 
-        file_path = Path(data_path).joinpath(f'{name}.json')
+        file_path = project_dir.joinpath(data_path).joinpath(f'{name}.json')
 
         if not file_path.exists():
             raise FileNotFoundError(f'Could not find the file: {file_path}')

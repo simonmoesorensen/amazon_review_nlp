@@ -32,6 +32,7 @@ def train_on_cloud():
                    "--gpus", 1,
                    "--azure",
                    "--batch-size", 128,
+                   "--lr", 1e-4,
                    "--data-path", str(data_ref)],
         environment=env
     )

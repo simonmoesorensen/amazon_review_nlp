@@ -48,16 +48,19 @@ def test_model_output_dim(model, data):
 
     input_ids = batch["input_ids"]
     attention_mask = batch["attention_mask"]
+    labels = batch['labels']
 
-    logits = model(
+    loss, logits = model(
         input_ids=input_ids,
         attention_mask=attention_mask,
+        labels=labels
     )
 
     batch_size = 32
     n_classes = 2
 
     assert logits.shape == torch.Size([batch_size, n_classes])
+    assert loss is not None
 
 
 def test_model_predictions(model, data):
@@ -65,11 +68,14 @@ def test_model_predictions(model, data):
 
     input_ids = batch["input_ids"]
     attention_mask = batch["attention_mask"]
+    labels = batch['labels']
 
-    logits = model(
+    loss, logits = model(
         input_ids=input_ids,
         attention_mask=attention_mask,
+        labels=labels
     )
+
     preds = model.get_prediction(logits)
 
     batch_size = 32
