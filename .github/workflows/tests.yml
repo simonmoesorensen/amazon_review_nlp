@@ -8,27 +8,31 @@ on:
 
 jobs:
   build:
+
     runs-on: ubuntu-latest
 
     steps:
     - name: Checkout
       uses: actions/checkout@v2
-    - name: Set up Python 3.6.12
+    - name: Set up Python 3.7
       uses: actions/setup-python@v2
       with:
-        python-version: 3.6.12
+        python-version: 3.7
+    - name: Install torch
+      run: pip3 install torch==1.8.1+cpu torchvision==0.9.1+cpu torchaudio===0.8.1 -f https://download.pytorch.org/whl/torch_stable.html
     - name: Install dependencies
       run: |
-        conda env update --file conda_dependencies.yml --name base
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
     - name: Test with pytest
       run: |
-        conda install pytest
-        $CONDA/bin/pytest -v
+        pip install pytest
+        pytest -v
     - name: Sort imports with isort
       run: |
-        conda install isort
-        $CONDA/bin/isort src
+        pip install isort
+        isort src
     - name: Format code with flake8
       run: |
-        conda install flake8
-        $CONDA/bin/flake8 src
+        pip install flake8
+        flake8 src
