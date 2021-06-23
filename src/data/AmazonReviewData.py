@@ -19,6 +19,8 @@ class AmazonReviewFullDataModule(pl.LightningDataModule):
         self,
         tokenizer=None,
         val_size: float = 0.2,
+        
+        self.val_size = val_size
         data_dir: str = project_dir.joinpath("data"),
         batch_size: int = 32,
         max_seq_length: int = 128,
