@@ -7,10 +7,7 @@ import pandas as pd
 from src.models.bertsentimentclassifier import BertSentimentClassifier
 from src.data.AmazonReviewDataModule import AmazonReviewDataModule
 
-
 model = BertSentimentClassifier("bert-base-cased")
-
-data = AmazonReviewDataModule().test_dataloader()
 
 
 @pytest.fixture(autouse=True)
@@ -29,6 +26,8 @@ def test_constructor():
 
 
 def test_bert_output_dim():
+    data = AmazonReviewDataModule().test_dataloader()
+
     batch = next(iter(data))
 
     input_ids = batch["input_ids"]
@@ -50,6 +49,8 @@ def test_bert_output_dim():
 
 
 def test_model_output_dim():
+    data = AmazonReviewDataModule().test_dataloader()
+
     batch = next(iter(data))
 
     input_ids = batch["input_ids"]
@@ -69,6 +70,8 @@ def test_model_output_dim():
 
 
 def test_model_predictions():
+    data = AmazonReviewDataModule().test_dataloader()
+
     batch = next(iter(data))
 
     input_ids = batch["input_ids"]

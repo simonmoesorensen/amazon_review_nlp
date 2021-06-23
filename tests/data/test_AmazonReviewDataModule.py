@@ -18,7 +18,7 @@ def mock_read_json(monkeypatch):
 
 
 def test_constructor():
-    data = AmazonReviewDataModule()
+    data = AmazonReviewDataModule(data_path='tests/test_files/')
     assert type(data) == AmazonReviewDataModule
 
 
