@@ -3,6 +3,7 @@ Tokenize the raw dataset
 """
 import argparse
 import json
+import sys
 from pathlib import Path
 from typing import Dict, List
 
@@ -21,7 +22,7 @@ processed_dir = project_dir.joinpath(
 )
 
 
-def parse_args() -> argparse.Namespace:
+def parse_args(args) -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="Tokenize the AmazonReview dataset"
     )
@@ -46,15 +47,15 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--max-rows",
         type=int,
-        default=.1e6, # 3.5e6,
+        default=.05e6, # 3.5e6,
         help="Ability to tokenize a subset of the total data"
     )
-    args = parser.parse_args()
+    args = parser.parse_args(args)
     return args
 
 
 def tokenize(tokenizer: transformers.PreTrainedTokenizer,
-             sentence: List[List[str]],
+             sentence: List[str],
              max_seq_length: int) -> Dict:
     encoded_sentence = tokenizer(
         sentence,
@@ -108,7 +109,7 @@ def save_dict(data: Dict, file_name: str) -> None:
 
 
 def main():
-    args = parse_args()
+    args = parse_args(sys.argv[1:])
 
     print('Tokenizing dataset...')
     print(f'Data exists: {data_exists()}')
