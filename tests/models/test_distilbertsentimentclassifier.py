@@ -9,19 +9,9 @@ from src.data.AmazonReviewDataModule import AmazonReviewDataModule
 from transformers import DistilBertTokenizer
 
 
-@pytest.fixture(autouse=True)
-def mock_read_json(monkeypatch):
-    project_dir = Path(__file__).resolve().parents[2]
-
-    def load_data():
-        return pd.read_json(project_dir.joinpath('tests/test_files/test.json'))
-
-    data = load_data()
-    monkeypatch.setattr(pd, 'read_json', lambda x: data)
-
 @pytest.fixture
 def model_name():
-    return "distilbert-base-cased"
+    return "distilbert-base-uncased"
 
 
 @pytest.fixture
@@ -36,7 +26,7 @@ def tokenizer(model_name):
 
 @pytest.fixture
 def data(tokenizer):
-    return AmazonReviewDataModule()
+    return AmazonReviewDataModule(data_path='tests/test_files/')
 
 
 def test_constructor(model):

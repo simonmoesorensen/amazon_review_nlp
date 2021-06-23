@@ -12,12 +12,13 @@ class ToTensor(object):
     """Convert ndarrays in sample to Tensors."""
 
     def __call__(self, sample):
-        input_ids, attention_mask, label, token_type_ids = sample['input_ids'], sample['attention_mask'], sample['labels'], sample['token_type_ids']
+        input_ids, attention_mask, label = sample['input_ids'], \
+                                           sample['attention_mask'], \
+                                           sample['labels']
 
         return {'input_ids': torch.from_numpy(np.array(input_ids)),
                 'attention_mask': torch.from_numpy(np.array(attention_mask)),
-                'labels': torch.from_numpy(np.array(label)),
-                'token_type_ids': torch.from_numpy(np.array(token_type_ids))}
+                'labels': torch.from_numpy(np.array(label))}
 
 
 class AmazonReviewTokenized(Dataset):

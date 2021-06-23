@@ -7,7 +7,7 @@ project_dir = Path(__file__).resolve().parents[2]
 
 
 def train_on_cloud():
-    interactive_auth = InteractiveLoginAuthentication(
+    InteractiveLoginAuthentication(
         tenant_id="f251f123-c9ce-448e-9277-34bb285911d9")
 
     ws = Workspace.from_config()
@@ -17,7 +17,8 @@ def train_on_cloud():
                                                file_path=str(requirements))
 
     env.docker.enabled = True
-    env.docker.base_image = 'mcr.microsoft.com/azureml/openmpi4.1.0-cuda11.0.3-cudnn8-ubuntu18.04'
+    env.docker.base_image = 'mcr.microsoft.com/azureml/' \
+                            'openmpi4.1.0-cuda11.0.3-cudnn8-ubuntu18.04'
 
     compute_target = ws.compute_targets['mlops-sbsosfftt']
 
@@ -37,13 +38,14 @@ def train_on_cloud():
         environment=env
     )
 
-    script_config.run_config.data_references[data_ref.data_reference_name] = data_ref.to_config()
+    ref_name = data_ref.data_reference_name
+    script_config.run_config.data_references[ref_name] = data_ref.to_config()
 
     experiment = Experiment(workspace=ws,
                             name="distilbert-amazon-review-classification")
 
     print('Submitting experiment')
-    run = experiment.submit(config=script_config)
+    experiment.submit(config=script_config)
     print('Submitted')
 
 

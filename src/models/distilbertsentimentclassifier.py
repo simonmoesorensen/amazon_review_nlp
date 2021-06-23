@@ -1,12 +1,11 @@
-from torch import nn, optim
+from torch import optim
 from transformers import DistilBertForSequenceClassification  # Only 2 classes
 import pytorch_lightning as pl
 import torch
-import torch.nn.functional as F
 
 
 class DistilBertSentimentClassifier(pl.LightningModule):
-    def __init__(self, model_name, lr=1e-3, n_classes=2):
+    def __init__(self, model_name, lr=1e-3):
         super(DistilBertSentimentClassifier, self).__init__()
 
         self.lr = lr

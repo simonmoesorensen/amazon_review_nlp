@@ -1,5 +1,4 @@
 import pandas as pd
-import pytest
 from transformers import DistilBertTokenizer
 
 from src.features.build_features import parse_args, tokenize, tokenize_data
@@ -8,7 +7,7 @@ from src.features.build_features import parse_args, tokenize, tokenize_data
 def test_parse_args():
     args = parse_args(['--chunk-size', '10'])
     assert args.chunk_size == 10
-    assert args.max_seq_length == 128
+    assert args.max_seq_length == 512
 
 
 def test_tokenize():

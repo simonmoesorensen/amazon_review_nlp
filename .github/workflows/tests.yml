@@ -14,10 +14,6 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v2
-    - name: Set up Python 3.7
-      uses: actions/setup-python@v2
-      with:
-        python-version: 3.7
     - name: Setup conda
       uses: conda-incubator/setup-miniconda@v2
       with:
@@ -25,7 +21,7 @@ jobs:
         environment-file: conda_dependencies.yml
     - name: Test with pytest
       run: |
-        pip install pytest
+        conda activate nlp_env
         pytest -v
     - name: Sort imports with isort
       run: |
